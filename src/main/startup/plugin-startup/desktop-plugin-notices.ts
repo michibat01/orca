@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron'
 import type { PluginService } from '../../plugins/plugin-service'
 import type { Store } from '../../persistence/loading-store/store'
 import { setMainPluginLanguagePacks, setMainUiLanguage } from '../../i18n/main-i18n'
-import { isUsablePluginLanguagePack } from '../../../shared/plugins/languages/plugin-language-pack-coverage'
+import { isUsablePluginLanguagePack } from '../../../shared/plugins/languages/plugin-language-pack-usability'
 import { rebuildAppMenu } from '../../menu/register-app-menu'
 import { rebuildSystemTrayMenu } from '../../tray/system-tray'
 

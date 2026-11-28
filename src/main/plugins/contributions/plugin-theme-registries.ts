@@ -1,19 +1,12 @@
 import { createHash } from 'node:crypto'
 import type { PluginThemeContribution } from '../../../shared/plugins/contributions/plugin-content-pack-contributions'
-import {
-  parsePluginAppThemeArtifact,
-  type PluginThemeRegistration
-} from '../../../shared/plugins/artifacts/plugin-theme-artifact'
-import {
-  parsePluginTerminalThemeArtifact,
-  type PluginTerminalThemeRegistration
-} from '../../../shared/plugins/artifacts/plugin-terminal-theme-artifact'
+import type { PluginThemeRegistration } from '../../../shared/plugins/artifacts/plugin-theme-artifact'
+import type { PluginTerminalThemeRegistration } from '../../../shared/plugins/artifacts/plugin-terminal-theme-artifact'
 import { PLUGIN_THEME_MAX_BYTES } from '../artifacts/plugin-artifact-validation'
 import { readContainedPluginArtifactText } from '../artifacts/plugin-contained-artifact'
 import { PluginArtifactPackRegistry } from './plugin-artifact-pack-registry'
 import type { PluginContentVerifier } from '../artifacts/plugin-content-integrity'
 import type { ValidDiscoveredPlugin } from '../discovery/plugin-discovery'
-import { resolvePluginThemeBackground } from './plugin-theme-background-image'
 
 async function readTheme<T>(
   plugin: ValidDiscoveredPlugin,
@@ -59,6 +52,12 @@ export function createPluginThemeRegistry(
     overlay,
     contributions: (plugin) => plugin.manifest.contributes.themes,
     load: async (plugin, contribution) => {
+      const [{ parsePluginAppThemeArtifact }, { resolvePluginThemeBackground }] = await Promise.all(
+        [
+          import('../../../shared/plugins/artifacts/plugin-theme-artifact'),
+          import('./plugin-theme-background-image')
+        ]
+      )
       const { background, ...theme } = await readTheme(
         plugin,
         contribution,
@@ -85,7 +84,10 @@ export function createPluginTerminalThemeRegistry(
     contentVerifier,
     overlay,
     contributions: (plugin) => plugin.manifest.contributes.terminalThemes,
-    load: (plugin, contribution) =>
-      readTheme(plugin, contribution, 'terminal theme', parsePluginTerminalThemeArtifact)
+    load: async (plugin, contribution) => {
+      const { parsePluginTerminalThemeArtifact } =
+        await import('../../../shared/plugins/artifacts/plugin-terminal-theme-artifact')
+      return readTheme(plugin, contribution, 'terminal theme', parsePluginTerminalThemeArtifact)
+    }
   })
 }

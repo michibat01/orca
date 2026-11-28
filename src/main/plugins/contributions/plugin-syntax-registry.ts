@@ -1,15 +1,10 @@
 import { createHash } from 'node:crypto'
 import type { PluginSyntaxContribution } from '../../../shared/plugins/contributions/plugin-content-pack-contributions'
-import {
-  PLUGIN_SYNTAX_CONFIGURATION_MAX_BYTES,
-  PLUGIN_SYNTAX_GRAMMAR_MAX_BYTES,
-  parsePluginGrammarArtifact,
-  parsePluginLanguageConfiguration,
-  validatePluginGrammarIncludes,
-  type PluginGrammarArtifact,
-  type PluginLanguageConfiguration,
-  type PluginSyntaxMetadata,
-  type PluginSyntaxPayload
+import type {
+  PluginGrammarArtifact,
+  PluginLanguageConfiguration,
+  PluginSyntaxMetadata,
+  PluginSyntaxPayload
 } from '../../../shared/plugins/artifacts/plugin-syntax-artifact'
 import { readContainedPluginArtifactText } from '../artifacts/plugin-contained-artifact'
 import { PluginArtifactPackRegistry } from './plugin-artifact-pack-registry'
@@ -26,6 +21,12 @@ async function loadSyntax(
   plugin: ValidDiscoveredPlugin,
   contribution: PluginSyntaxContribution
 ): Promise<SyntaxEntry> {
+  const {
+    PLUGIN_SYNTAX_CONFIGURATION_MAX_BYTES,
+    PLUGIN_SYNTAX_GRAMMAR_MAX_BYTES,
+    parsePluginGrammarArtifact,
+    parsePluginLanguageConfiguration
+  } = await import('../../../shared/plugins/artifacts/plugin-syntax-artifact')
   const grammarText = await readContainedPluginArtifactText(
     plugin.rootDir,
     contribution.path,
@@ -110,6 +111,11 @@ export class PluginSyntaxRegistry {
       grammars.push(entry.grammar)
       byPlugin.set(entry.pluginKey, grammars)
     }
+    if (byPlugin.size === 0) {
+      return
+    }
+    const { validatePluginGrammarIncludes } =
+      await import('../../../shared/plugins/artifacts/plugin-syntax-artifact')
     for (const [pluginKey, grammars] of byPlugin) {
       try {
         validatePluginGrammarIncludes(grammars)

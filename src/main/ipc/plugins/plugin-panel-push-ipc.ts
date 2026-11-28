@@ -32,14 +32,19 @@ export function registerPluginPanelPushHandlers(pluginService: PluginService): v
     }
     const { sessionToken } = parsed.data
     const key = `${sender.id}\0${sessionToken}`
+    const stop = await pluginService.panelBridge.open(session.caller, session.pluginKey, (push) => {
+      if (!sender.isDestroyed()) {
+        sender.send(PLUGIN_PANEL_PUSH_CHANNEL, { sessionToken, push })
+      }
+    })
+    if (sender.isDestroyed()) {
+      stop()
+      return false
+    }
     const existing = pushes.get(key)
     existing?.stop()
     pushes.set(key, {
-      stop: pluginService.panelBridge.open(session.caller, session.pluginKey, (push) => {
-        if (!sender.isDestroyed()) {
-          sender.send(PLUGIN_PANEL_PUSH_CHANNEL, { sessionToken, push })
-        }
-      }),
+      stop,
       releaseDestroyed:
         existing?.releaseDestroyed ??
         addFanoutListener(sender, 'destroyed', () => pushes.delete(key))

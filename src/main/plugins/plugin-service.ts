@@ -23,7 +23,7 @@ import {
   resolvePluginServiceHostCallPolicy,
   type PluginServiceHostCall
 } from './runtime/plugin-service-host-call'
-import { PluginPanelBridge } from './panels/plugin-panel-bridge'
+import { LazyPluginPanelBridge } from './panels/lazy-plugin-panel-bridge'
 import { LazyPluginPanelController } from './panels/lazy-plugin-panel-controller'
 import { LazyPluginWorkerController } from './workers/lazy-plugin-worker-controller'
 import { PluginServiceHousekeeping } from './development/plugin-service-housekeeping'
@@ -54,7 +54,7 @@ export class PluginService {
   private readonly contentVerifier = new PluginContentVerifier()
   readonly contentPacks: ReturnType<typeof createPluginContentPacks>
   readonly panels: LazyPluginPanelController
-  readonly panelBridge: PluginPanelBridge
+  readonly panelBridge: LazyPluginPanelBridge
   private readonly hostCall: PluginServiceHostCall
   private readonly changeListeners = new Set<(event: PluginChangeEvent) => void>()
   private readonly housekeeping = new PluginServiceHousekeeping()
@@ -75,7 +75,7 @@ export class PluginService {
     this.audit = new PluginAuditLog(getPluginsDataDir(options.userDataPath))
     const resolveApproved = (pluginKey: string, allowRefreshPause = false) =>
       this.findApprovedPlugin(pluginKey, allowRefreshPause)
-    this.panelBridge = new PluginPanelBridge({
+    this.panelBridge = new LazyPluginPanelBridge({
       findApprovedPlugin: (pluginKey) => resolveApproved(pluginKey),
       grantedCapabilities: (pluginKey) => this.getGrantedCapabilities(pluginKey),
       ensureWorker: (plugin) => this.workerController.ensure(plugin),

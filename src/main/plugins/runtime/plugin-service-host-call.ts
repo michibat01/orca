@@ -149,7 +149,13 @@ export function resolvePluginServiceHostCallPolicy(input: {
 }
 
 /** The bridge as host services: the request carries the calling panel. */
-export function pluginPanelBridgeServices(bridge: PluginPanelBridge): PluginPanelBridgeServices {
+export function pluginPanelBridgeServices(
+  bridge: Pick<PluginPanelBridge, 'request' | 'dataChanged'> & {
+    subscribe(
+      ...args: Parameters<PluginPanelBridge['subscribe']>
+    ): ReturnType<PluginPanelBridge['subscribe']> | Promise<void>
+  }
+): PluginPanelBridgeServices {
   return {
     request: (pluginKey, request, caller) => bridge.request({ pluginKey, caller, ...request }),
     subscribe: (pluginKey, panelId, event) => bridge.subscribe(pluginKey, panelId, event),

@@ -17,7 +17,7 @@ export type PluginPanelBridgeServices = {
     request: { name: string; input: unknown; timeoutMs?: number },
     caller: PluginPanelCaller
   ): Promise<PluginJsonValue>
-  subscribe(pluginId: string, panelId: string, event: PluginEventName): void
+  subscribe(pluginId: string, panelId: string, event: PluginEventName): void | Promise<void>
   dataChanged(pluginId: string, area: PluginDataArea, key: string): void
 }
 
@@ -55,7 +55,7 @@ export const PLUGIN_PANEL_BRIDGE_HANDLERS = {
   'events.subscribe': bind(
     api['events.subscribe'],
     async ({ event }, { pluginId, services, scope }) => {
-      requireBridge(services.panels).subscribe(pluginId, requirePanel(scope.panel).id, event)
+      await requireBridge(services.panels).subscribe(pluginId, requirePanel(scope.panel).id, event)
       return { ok: true as const }
     }
   )

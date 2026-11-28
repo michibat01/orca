@@ -11,7 +11,7 @@ import type { RuntimeClientSettingsController } from '../client/settings/runtime
 import type { RuntimeAutomationController } from '../integrations/automations/runtime-automation-controller'
 import { RuntimeArtifactController } from '../artifacts/runtime-artifact-controller'
 import type { OrchestrationEnvironmentTransport } from '../orchestration/federation/environment-transport'
-import type { RuntimeOrchestrationFederation } from '../orchestration/federation/runtime-orchestration-federation'
+import type { LazyRuntimeOrchestrationFederation } from '../orchestration/federation/lazy-runtime-orchestration-federation'
 import type {
   RuntimeGraphStatus,
   RuntimeMobileSessionCreateTerminalResult,
@@ -91,7 +91,7 @@ export abstract class OrcaRuntimeWithRuntimeId extends RuntimeBotConstructionHoo
 
   protected readonly orchestrationEnvironmentTransport!: OrchestrationEnvironmentTransport | null
 
-  protected readonly orchestrationFederation!: RuntimeOrchestrationFederation
+  protected readonly orchestrationFederation!: LazyRuntimeOrchestrationFederation
 
   protected abstract readonly terminalIdentity: TerminalIdentitySource
   protected abstract readonly rendererGraphEpoch: number

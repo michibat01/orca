@@ -49,7 +49,7 @@ import { getAppEnvironment } from '../../../shared/app-lifecycle/app-environment
 import { RuntimeClientSettingsController } from '../client/settings/runtime-client-settings'
 import { RuntimeSessionSearchSettingsController } from '../integrations/ai-vault/runtime-session-search-settings'
 import { RuntimeAutomationController } from '../integrations/automations/runtime-automation-controller'
-import { RuntimeOrchestrationFederation } from '../orchestration/federation/runtime-orchestration-federation'
+import { LazyRuntimeOrchestrationFederation } from '../orchestration/federation/lazy-runtime-orchestration-federation'
 import { configureAiVaultSessionSources } from '../../ai-vault/discovery/ai-vault-session-sources-registry'
 import { configureHostReadableTranscriptPathSources } from '../../native-chat/transcript-discovery/host-readable-transcript-path'
 import { createEphemeralAgentSessionClaimSigner } from '../agent-session/ownership/agent-session-claim-identity'
@@ -243,7 +243,7 @@ export abstract class OrcaRuntimeWithStateFields extends OrcaRuntimeWithBots {
     })
     this.orchestrationEnvironmentTransport = deps?.orchestrationEnvironmentTransport ?? null
     this.workspaceSleepPlatform = deps?.workspaceSleepPlatform ?? null
-    this.orchestrationFederation = new RuntimeOrchestrationFederation(
+    this.orchestrationFederation = new LazyRuntimeOrchestrationFederation(
       this,
       this.orchestrationEnvironmentTransport
     )
